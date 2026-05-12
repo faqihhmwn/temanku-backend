@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Realtime Camera WebSocket Predict</title>
+</head>
+<body>
+    <h2>Realtime Camera WebSocket Predict</h2>
+
+    <video id="video" width="400" height="300" autoplay></video>
+    <canvas id="canvas" width="400" height="300" style="display:none;"></canvas>
+
+    <br><br>
+
+    <button onclick="startCamera()">Start Camera</button>
+    <button onclick="startPredict()">Start Predict</button>
+    <button onclick="stopPredict()">Stop Predict</button>
+
+    <h3>Result:</h3>
+    <pre id="result">Belum ada hasil</pre>
+
+    <script>
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+        const resultText = document.getElementById("result");
+
+        let socket = null;
+        let intervalId = null;
+
+        function connectWebSocket() {
+            socket = new WebSocket("ws://127.0.0.1:8000/ws/predict");
+
+            socket.onopen = function () {
+                console.log("WebSocket connected");
+                resultText.innerText = "WebSocket connected";
+            };
+
+            socket.onmessage = function (event) {
+                console.log("Prediction:", event.data);
+                resultText.innerText = event.data;
+            };
+
+            socket.onerror = function (error) {
+                console.log("WebSocket error:", error);
+                resultText.innerText = "WebSocket error";
+            };
+
+            socket.onclose = function () {
+                console.log("WebSocket closed");
+            };
+        }
+
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: false
+                });
+
+                video.srcObject = stream;
+                resultText.innerText = "Camera started";
+            } catch (error) {
+                console.log(error);
+                resultText.innerText = "Camera error: " + error.message;
+            }
+        }
+
+        function startPredict() {
+            if (!socket || socket.readyState !== WebSocket.OPEN) {
+                connectWebSocket();
+            }
+
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+
+            intervalId = setInterval(() => {
+                if (!socket || socket.readyState !== WebSocket.OPEN) {
+                    return;
+                }
+
+                const context = canvas.getContext("2d");
+
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const imageBase64 = canvas.toDataURL("image/jpeg");
+
+                socket.send(imageBase64);
+
+            }, 1000); // kirim 1 frame per detik
+
+            resultText.innerText = "Prediction started";
+        }
+
+        function stopPredict() {
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+
+            resultText.innerText = "Prediction stopped";
+        }
+    </script>
+</body>
+</html>

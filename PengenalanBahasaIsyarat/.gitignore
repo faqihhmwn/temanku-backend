@@ -1,0 +1,30 @@
+# Ignore dataset folders
+dataset_cad/
+dataset_fiks/fiksAug/
+dataset_fiks/fiksData/
+dataset_fiks/fiksPembagian/
+dataset_fiks/umum/
+dataset_fiks/add/
+dataset_fiks/Aug/
+dataset_fiks/awal/
+dataset_fiks/fiks/
+random/
+dataset_banding/
+
+# Ignore common data subfolders anywhere in repo
+**/img/
+**/labels/
+**/preview/
+
+# Python & editor
+__pycache__/
+*.pyc
+.vscode/
+.env
+venv/
+
+
+# Optional: ignore image files (uncomment if you want)
+# *.jpg
+# *.jpeg
+# *.png

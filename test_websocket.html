@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test WebSocket Predict</title>
+</head>
+<body>
+    <h2>Test WebSocket Predict</h2>
+
+    <input type="file" id="imageInput" accept="image/*">
+    <button onclick="sendImage()">Send Image</button>
+
+    <pre id="result"></pre>
+
+    <script>
+        const socket = new WebSocket("ws://127.0.0.1:8000/ws/predict");
+
+        socket.onopen = function () {
+            console.log("WebSocket connected");
+            document.getElementById("result").innerText = "WebSocket connected";
+        };
+
+        socket.onmessage = function (event) {
+            console.log("Result:", event.data);
+            document.getElementById("result").innerText = event.data;
+        };
+
+        socket.onerror = function (error) {
+            console.log("WebSocket error:", error);
+            document.getElementById("result").innerText = "WebSocket error";
+        };
+
+        socket.onclose = function () {
+            console.log("WebSocket closed");
+        };
+
+        function sendImage() {
+            const input = document.getElementById("imageInput");
+            const file = input.files[0];
+
+            if (!file) {
+                alert("Pilih gambar dulu");
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function () {
+                const base64Image = reader.result;
+                socket.send(base64Image);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>

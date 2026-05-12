@@ -1,0 +1,17 @@
+venv
+__pycache__
+.git
+PengenalanBahasaIsyarat
+models
+dataset_fiks
+
+*.jpg
+*.png
+*.mp4
+*.zip
+
+# ignore semua .pt
+*.pt
+
+# kecuali model utama
+!best.pt
