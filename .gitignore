@@ -27,8 +27,11 @@ Thumbs.db
 # Database / local files
 *.sqlite3
 *.db
+*.sql
 
 # Uploads
 uploads/
 
-config.py
+# ML training repo / dataset
+PengenalanBahasaIsyarat/
+dataset_fiks/

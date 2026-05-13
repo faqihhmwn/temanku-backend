@@ -11,7 +11,6 @@ router = APIRouter(
 )
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated="auto")
-# pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 # register
 @router.post('/signup')
@@ -105,10 +104,15 @@ async def login(request: Login, db: Session = Depends(get_db)):
             code="200",
             status="Ok",
             message="Login Success",
-            result=tokenResponse(
-                access_token=token,
-                token_type="bearer"
-            ).dict(exclude_none=True)
+            result={
+                "access_token": token,
+                "token_type": "bearer",
+                "user": {
+                    "id": _user.id,
+                    "username": _user.username,
+                    "role": _user.role
+                }
+            }
         ).dict(exclude_none=True)
 
     except Exception as error:

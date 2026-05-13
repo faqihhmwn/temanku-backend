@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from config import get_db
 from tables.dictionary import Dictionary
-
+from oauth2 import get_current_user, get_current_admin
 import shutil
 import os
 
@@ -19,7 +19,8 @@ async def create_dictionary(
     letter: str,
     description: str,
     file: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_admin = Depends(get_current_admin)
 ):
 
     file_path = f"uploads/{file.filename}"
@@ -88,7 +89,8 @@ async def update_dictionary(
     letter: str,
     description: str,
     file: UploadFile = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_admin = Depends(get_current_admin)
 ):
 
     data = db.query(Dictionary).filter(
@@ -132,7 +134,8 @@ async def update_dictionary(
 @router.delete("/{dictionary_id}")
 def delete_dictionary(
     dictionary_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_admin = Depends(get_current_admin)
 ):
 
     data = db.query(Dictionary).filter(

@@ -1,52 +1,52 @@
-from routes import profile
 from fastapi import FastAPI
-from routes import ml
-import routes.users as user_routes
-from routes import predict
-import tables.dictionary
-from routes import dictionary
-from config import engine, Base
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+
+from config import engine, Base
+
+# Import tables agar create_all membaca semua table
+import tables.users
+import tables.dictionary
+import tables.quiz
+
+# Import routes
+import routes.users as user_routes
+from routes import dictionary
+from routes import predict
+from routes import ml
 from routes import websocket
 from routes import quiz
+from routes import profile
 
 
 app = FastAPI()
 
-# quiz
-app.include_router(quiz.router)
+# CORS Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-#websocket
-app.include_router(websocket.router)
+# Static files untuk upload gambar dictionary
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-# dictionary
-app.include_router(dictionary.router)
+# Create tables
+Base.metadata.create_all(bind=engine)
 
-# prediction
-app.include_router(predict.router)
-
-# AI
-app.include_router(ml.router)
 
 @app.get("/")
 def root():
     return {"message": "API is running"}
 
-import tables.quiz
 
+# Routes
 app.include_router(user_routes.router)
-
-Base.metadata.create_all(bind=engine)
-
-# dictionary
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-app.include_router(dictionary.router)
-
-# model predict
-app.include_router(predict.router)
-
-# users
-app.include_router(user_routes.router)
-
-# profile
 app.include_router(profile.router)
+app.include_router(dictionary.router)
+app.include_router(predict.router)
+app.include_router(ml.router)
+app.include_router(websocket.router)
+app.include_router(quiz.router)
