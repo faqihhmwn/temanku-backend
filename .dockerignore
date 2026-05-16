@@ -14,3 +14,6 @@ dataset_fiks
 
 # kecuali model utama
 !best.pt
+
+# environment
+.env
