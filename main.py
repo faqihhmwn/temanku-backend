@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-
+import os
 from config import engine, Base
 
 # Import tables agar create_all membaca semua table
@@ -29,6 +29,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+os.makedirs("uploads", exist_ok=True)
 
 # Static files untuk upload gambar dictionary
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
