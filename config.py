@@ -17,6 +17,15 @@ DB_NAME = os.getenv("DB_NAME")
 
 INSTANCE_CONNECTION_NAME = os.getenv("INSTANCE_CONNECTION_NAME")
 
+print("===== DATABASE CONFIG DEBUG =====")
+print("DB_USER:", DB_USER)
+print("DB_NAME:", DB_NAME)
+print("DB_HOST:", DB_HOST)
+print("DB_PORT:", DB_PORT)
+print("INSTANCE_CONNECTION_NAME:", INSTANCE_CONNECTION_NAME)
+print("USING_CLOUD_SQL_SOCKET:", bool(INSTANCE_CONNECTION_NAME))
+print("=================================")
+
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(
