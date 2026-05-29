@@ -27,11 +27,11 @@ async def signup(request: Register, db: Session = Depends(get_db)):
             return ResponseSchema(
                 code="400",
                 status="Bad Request",
-                message="Email sudah digunakan"
+                message="Email Sudah Digunakan"
             ).dict(exclude_none=True)
 
         _user = Users(
-            username=request.username,
+            username=request.full_name,
             password=pwd_context.hash(request.password),
             email=request.email,
             phone_number=request.phone_number,
@@ -44,16 +44,17 @@ async def signup(request: Register, db: Session = Depends(get_db)):
         return ResponseSchema(
             code="200",
             status="Ok",
-            message="Register Success"
+            message="Registrasi Berhasil"
         ).dict(exclude_none=True)
 
     except Exception as error:
-        print(error)
+        import traceback
+        traceback.print_exc()
 
         return ResponseSchema(
             code="500",
             status="Error",
-            message="Internal Server Error"
+            message=str(error)
         ).dict(exclude_none=True)
 
 
