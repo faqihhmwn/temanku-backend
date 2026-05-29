@@ -36,6 +36,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# folder upload
+os.makedirs("uploads", exist_ok=True)
+
 # Static files untuk upload gambar dictionary
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
