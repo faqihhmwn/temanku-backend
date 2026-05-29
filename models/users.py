@@ -6,7 +6,7 @@ T = TypeVar('T')
 
 #login
 class Login(BaseModel):
-    username: str
+    email: str
     password: str
 
 #register
