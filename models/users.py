@@ -11,13 +11,12 @@ class Login(BaseModel):
 
 #register
 class Register(BaseModel):
-    username: str
-    password: str
+    full_name: str
     email: str
-    phone_number: str
-
-    first_name: str
-    last_name : str
+    password: str
+    phone_number: str = ""
+    first_name: str = ""
+    last_name: str = ""
 
 #response model
 class ResponseSchema(BaseModel):

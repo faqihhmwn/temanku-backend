@@ -17,19 +17,6 @@ pwd_context = CryptContext(schemes=['bcrypt'], deprecated="auto")
 async def signup(request: Register, db: Session = Depends(get_db)):
     try:
 
-        existing_username = UsersRepo.find_by_username(
-            db,
-            Users,
-            request.username
-        )
-
-        if existing_username:
-            return ResponseSchema(
-                code="400",
-                status="Bad Request",
-                message="Username already exists"
-            ).dict(exclude_none=True)
-
         existing_email = UsersRepo.find_by_email(
             db,
             Users,
@@ -40,7 +27,7 @@ async def signup(request: Register, db: Session = Depends(get_db)):
             return ResponseSchema(
                 code="400",
                 status="Bad Request",
-                message="Email already exists"
+                message="Email sudah digunakan"
             ).dict(exclude_none=True)
 
         _user = Users(
