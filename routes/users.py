@@ -64,24 +64,24 @@ async def signup(request: Register, db: Session = Depends(get_db)):
 async def login(request: Login, db: Session = Depends(get_db)):
     try:
 
-        _user = UsersRepo.find_by_username(
+        _user = UsersRepo.find_by_email(
             db,
             Users,
-            request.username
+            request.email
         )
 
         if not _user:
             return ResponseSchema(
                 code="404",
                 status="Not Found",
-                message="Username not found"
+                message="Email tidak ditemukan"
             ).dict(exclude_none=True)
 
         if not pwd_context.verify(request.password, _user.password):
             return ResponseSchema(
                 code="400",
                 status="Bad Request",
-                message="Invalid Password"
+                message="Password salah"
             ).dict(exclude_none=True)
 
         token = JWTRepo.generate_token({
@@ -91,13 +91,13 @@ async def login(request: Login, db: Session = Depends(get_db)):
         return ResponseSchema(
             code="200",
             status="Ok",
-            message="Login Success",
+            message="Login Berhasil",
             result={
                 "access_token": token,
                 "token_type": "bearer",
                 "user": {
                     "id": _user.id,
-                    "username": _user.username,
+                    "full_name": _user.username,
                     "role": _user.role
                 }
             }
