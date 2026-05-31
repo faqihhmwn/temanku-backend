@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional 
+from typing import Optional
 
 
 class ProfileResponse(BaseModel):
@@ -9,10 +9,11 @@ class ProfileResponse(BaseModel):
     phone_number: str
     first_name: str
     last_name: str
+    profile_image_url: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
-    
+
 class ProfileUpdate(BaseModel):
     username: Optional[str] = None
     email: Optional[str] = None
@@ -20,6 +21,7 @@ class ProfileUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
 
+
 class ChangePasswordRequest(BaseModel):
-    current_password:str
-    new_password:str
+    current_password: str
+    new_password: str

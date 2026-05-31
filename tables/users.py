@@ -13,6 +13,9 @@ class Users(Base):
 
     first_name = Column(String(255))
     last_name = Column(String(255))
+
+    profile_image_url = Column(String(500), nullable=True)
+
     role = Column(String(50), default="user")
     create_date = Column(DateTime, default=datetime.datetime.now)
     update_date = Column(DateTime)

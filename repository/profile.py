@@ -5,13 +5,6 @@ from config import SECRET_KEY, ALGORITHM
 from pydantic import BaseModel
 from passlib.context import CryptContext
 
-# def get_profile_by_token(db: Session, token: str):
-#     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-#     username = payload.get("sub")
-
-#     user = db.query(user).filter(user.username == username).first()
-
-#     return user
 
 def get_profile(db: Session, user_id: int):
     user = db.query(Users).filter(Users.id == user_id).first()
@@ -29,6 +22,7 @@ def get_profile(db: Session, user_id: int):
         "created_at": user.create_date,
         "updated_at": user.update_date
     }
+
 
 def update_profile(db, user_id: int, data):
     user = db.query(Users).filter(Users.id == user_id).first()
