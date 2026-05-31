@@ -4,9 +4,7 @@ from sqlalchemy.orm import Session
 from config import get_db
 from tables.dictionary import Dictionary
 from oauth2 import get_current_admin
-
-import shutil
-import os
+from utils.storage import upload_image, delete_image
 
 router = APIRouter(
     prefix="/dictionary",
@@ -36,15 +34,13 @@ async def create_dictionary(
             "message": f"Dictionary '{name}' already exists"
         }
 
-    file_path = f"uploads/{file.filename}"
-
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    # upload ke Google Cloud Storage
+    image_url = upload_image(file)
 
     new_data = Dictionary(
         name=name,
         category=category,
-        image_url=file_path,
+        image_url=image_url,
         description=description
     )
 
@@ -157,17 +153,13 @@ async def update_dictionary(
 
     if file:
 
-        # hapus gambar lama
-        if data.image_url and os.path.exists(data.image_url):
-            os.remove(data.image_url)
+        # hapus gambar lama dari GCS
+        delete_image(data.image_url)
 
-        # simpan gambar baru
-        file_path = f"uploads/{file.filename}"
+        # upload gambar baru ke GCS
+        image_url = upload_image(file)
 
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-
-        data.image_url = file_path
+        data.image_url = image_url
 
     db.commit()
     db.refresh(data)
@@ -203,9 +195,8 @@ def delete_dictionary(
             "message": "Dictionary not found"
         }
 
-    # hapus file gambar
-    if data.image_url and os.path.exists(data.image_url):
-        os.remove(data.image_url)
+    # hapus gambar dari GCS
+    delete_image(data.image_url)
 
     db.delete(data)
     db.commit()
