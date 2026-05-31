@@ -106,11 +106,18 @@ def delete_profile_photo(
         except Exception:
             pass
 
+    user.profile_image_url = None
+
+    db.add(user)
     db.commit()
+    db.refresh(user)
 
     return {
         "success": True,
-        "message": "Photo profil berhasil dihapus"
+        "message": "Photo profil berhasil dihapus",
+        "data": {
+            "profile_image_url": user.profile_image_url
+        }
     }
 
 
