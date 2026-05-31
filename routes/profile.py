@@ -77,10 +77,40 @@ async def upload_profile_photo(
 
     return {
         "success": True,
-        "message": "Profile photo updated",
+        "message": "Photo profil berhasil diperbarui",
         "data": {
             "profile_image_url": image_url
         }
+    }
+
+
+@router.delete("/photo")
+def delete_profile_photo(
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+
+    user = db.query(Users).filter(
+        Users.id == current_user.id
+    ).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    if user.profile_image_url:
+        try:
+            delete_image(user.profile_image_url)
+        except Exception:
+            pass
+
+    db.commit()
+
+    return {
+        "success": True,
+        "message": "Photo profil berhasil dihapus"
     }
 
 
