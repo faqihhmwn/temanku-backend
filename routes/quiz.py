@@ -171,8 +171,6 @@ async def update_quiz_question(
     question_id: int,
 
     question_text: str = Form(...),
-    question_type: str = Form(...),
-    category: str = Form(...),
     answer: str = Form(...),
 
     option_a: str | None = Form(None),
@@ -197,8 +195,6 @@ async def update_quiz_question(
         }
 
     question.question_text = question_text
-    question.question_type = question_type
-    question.category = category
     question.answer = answer
 
     question.option_a = option_a
