@@ -18,8 +18,6 @@ def quiz_admin_response(question: QuizQuestion):
     return {
         "id": question.id,
         "question_text": question.question_text,
-        "question_type": question.question_type,
-        "category": question.category,
         "image_url": question.image_url,
         "option_a": question.option_a,
         "option_b": question.option_b,
@@ -35,8 +33,6 @@ def public_quiz_response(question: QuizQuestion):
     return {
         "id": question.id,
         "question_text": question.question_text,
-        "question_type": question.question_type,
-        "category": question.category,
         "image_url": question.image_url,
         "options": [
             question.option_a,
@@ -50,8 +46,6 @@ def public_quiz_response(question: QuizQuestion):
 @router.post("/questions")
 async def create_quiz_question(
     question_text: str = Form(...),
-    question_type: str = Form(...),
-    category: str = Form(...),
     answer: str = Form(...),
 
     option_a: str | None = Form(None),
@@ -64,7 +58,7 @@ async def create_quiz_question(
     db: Session = Depends(get_db),
     current_admin: Users = Depends(get_current_admin)
 ):
-
+    
     image_url = None
 
     if file:
@@ -79,8 +73,6 @@ async def create_quiz_question(
 
     new_question = QuizQuestion(
         question_text=question_text,
-        question_type=question_type,
-        category=category,
         image_url=image_url,
         option_a=option_a,
         option_b=option_b,

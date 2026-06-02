@@ -4,9 +4,8 @@ from typing import Optional
 
 class QuizResponse(BaseModel):
     id: int
+
     question_text: str
-    question_type: str
-    category: str
 
     image_url: Optional[str] = None
 
