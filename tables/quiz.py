@@ -9,10 +9,10 @@ class QuizQuestion(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     question_text = Column(String(255), nullable=False)
-    question_type = Column(String(50), nullable=False)  # multiple_choice / image / gesture
+    question_type = Column(String(50), nullable=False)
     category = Column(String(100), nullable=False)
 
-    image_url = Column(String(255), nullable=True)
+    image_url = Column(String(500), nullable=True)
 
     option_a = Column(String(255), nullable=True)
     option_b = Column(String(255), nullable=True)

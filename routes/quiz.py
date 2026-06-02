@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from config import get_db
 import datetime
-from oauth2 import get_current_user, get_current_admin
+from oauth2 import get_current_admin
 from tables.quiz import QuizQuestion
-from models.quiz import CreateQuizQuestion, UpdateQuizQuestion
 from tables.users import Users
+from fastapi import APIRouter, Depends, UploadFile, File, Form
+from utils.storage import upload_image, delete_image
 
 
 router = APIRouter(
@@ -48,22 +48,45 @@ def public_quiz_response(question: QuizQuestion):
 
 
 @router.post("/questions")
-def create_quiz_question(
-    request: CreateQuizQuestion,
+async def create_quiz_question(
+    question_text: str = Form(...),
+    question_type: str = Form(...),
+    category: str = Form(...),
+    answer: str = Form(...),
+
+    option_a: str | None = Form(None),
+    option_b: str | None = Form(None),
+    option_c: str | None = Form(None),
+    option_d: str | None = Form(None),
+
+    file: UploadFile | None = File(None),
+
     db: Session = Depends(get_db),
     current_admin: Users = Depends(get_current_admin)
 ):
 
+    image_url = None
+
+    if file:
+
+        if not file.content_type.startswith("image/"):
+            return {
+                "success": False,
+                "message": "File harus berupa gambar"
+            }
+
+        image_url = upload_image(file)
+
     new_question = QuizQuestion(
-        question_text=request.question_text,
-        question_type=request.question_type,
-        category=request.category,
-        image_url=request.image_url,
-        option_a=request.option_a,
-        option_b=request.option_b,
-        option_c=request.option_c,
-        option_d=request.option_d,
-        answer=request.answer
+        question_text=question_text,
+        question_type=question_type,
+        category=category,
+        image_url=image_url,
+        option_a=option_a,
+        option_b=option_b,
+        option_c=option_c,
+        option_d=option_d,
+        answer=answer
     )
 
     db.add(new_question)
@@ -72,7 +95,7 @@ def create_quiz_question(
 
     return {
         "success": True,
-        "message": "Quiz question created",
+        "message": "Soal quiz berhasil dibuat",
         "data": quiz_admin_response(new_question)
     }
 
@@ -142,7 +165,7 @@ def get_quiz_question_detail(
     if not question:
         return {
             "success": False,
-            "message": "Quiz question not found"
+            "message": "Soal quiz tidak ditemukan"
         }
 
     return {
@@ -152,9 +175,21 @@ def get_quiz_question_detail(
 
 
 @router.put("/questions/{question_id}")
-def update_quiz_question(
+async def update_quiz_question(
     question_id: int,
-    request: UpdateQuizQuestion,
+
+    question_text: str = Form(...),
+    question_type: str = Form(...),
+    category: str = Form(...),
+    answer: str = Form(...),
+
+    option_a: str | None = Form(None),
+    option_b: str | None = Form(None),
+    option_c: str | None = Form(None),
+    option_d: str | None = Form(None),
+
+    file: UploadFile | None = File(None),
+
     db: Session = Depends(get_db),
     current_admin: Users = Depends(get_current_admin)
 ):
@@ -166,13 +201,34 @@ def update_quiz_question(
     if not question:
         return {
             "success": False,
-            "message": "Quiz question not found"
+            "message": "Soal quiz tidak ditemukan"
         }
 
-    update_data = request.dict(exclude_unset=True)
+    question.question_text = question_text
+    question.question_type = question_type
+    question.category = category
+    question.answer = answer
 
-    for key, value in update_data.items():
-        setattr(question, key, value)
+    question.option_a = option_a
+    question.option_b = option_b
+    question.option_c = option_c
+    question.option_d = option_d
+
+    if file:
+
+        if not file.content_type.startswith("image/"):
+            return {
+                "success": False,
+                "message": "File harus berupa gambar"
+            }
+
+        if question.image_url:
+            try:
+                delete_image(question.image_url)
+            except Exception:
+                pass
+
+        question.image_url = upload_image(file)
 
     question.updated_at = datetime.datetime.now()
 
@@ -181,7 +237,7 @@ def update_quiz_question(
 
     return {
         "success": True,
-        "message": "Quiz question updated",
+        "message": "Soal quiz diperbarui",
         "data": quiz_admin_response(question)
     }
 
@@ -200,13 +256,19 @@ def delete_quiz_question(
     if not question:
         return {
             "success": False,
-            "message": "Quiz question not found"
+            "message": "Soal tidak ditemukan"
         }
+
+    if question.image_url:
+        try:
+            delete_image(question.image_url)
+        except Exception:
+            pass
 
     db.delete(question)
     db.commit()
 
     return {
         "success": True,
-        "message": "Quiz question deleted"
+        "message": "Soal berhasil dihapus"
     }
