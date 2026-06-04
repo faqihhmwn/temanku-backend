@@ -234,3 +234,42 @@ def get_public_quiz_package_detail(
             ]
         }
     }
+
+
+@router.get("/packages/{package_id}/questions/public")
+def get_public_questions_by_package(
+    package_id: int,
+    db: Session = Depends(get_db)
+):
+
+    package = db.query(QuizPackage).filter(
+        QuizPackage.id == package_id
+    ).first()
+
+    if not package:
+        return {
+            "success": False,
+            "message": "Quiz package tidak ditemukan"
+        }
+
+    questions = db.query(QuizQuestion).filter(
+        QuizQuestion.package_id == package_id
+    ).all()
+
+    return {
+        "success": True,
+        "data": [
+            {
+                "id": q.id,
+                "question_text": q.question_text,
+                "image_url": q.image_url,
+                "options": [
+                    q.option_a,
+                    q.option_b,
+                    q.option_c,
+                    q.option_d
+                ]
+            }
+            for q in questions
+        ]
+    }

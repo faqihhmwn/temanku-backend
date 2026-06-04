@@ -157,10 +157,11 @@ def get_public_quiz_question_detail(
     }
 
 
-@router.get("/packages/{package_id}/questions/public")
+@router.get("/packages/{package_id}/questions")
 def get_questions_by_package(
     package_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_admin: Users = Depends(get_current_admin)
 ):
 
     package = db.query(QuizPackage).filter(
@@ -180,7 +181,7 @@ def get_questions_by_package(
     return {
         "success": True,
         "data": [
-            public_quiz_response(q)
+            quiz_admin_response(q)
             for q in questions
         ]
     }
