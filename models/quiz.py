@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 
 class CreateQuizPackage(BaseModel):
@@ -34,3 +34,13 @@ class UpdateQuizQuestion(BaseModel):
     option_b: Optional[str] = None
     option_c: Optional[str] = None
     option_d: Optional[str] = None
+
+
+class QuizAnswer(BaseModel):
+    question_id: int
+    answer: str
+
+
+class SubmitQuiz(BaseModel):
+    package_id: int
+    answers: List[QuizAnswer]

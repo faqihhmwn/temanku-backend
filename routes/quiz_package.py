@@ -8,7 +8,7 @@ from oauth2 import get_current_admin
 from tables.quiz_package import QuizPackage
 from tables.quiz import QuizQuestion
 from tables.users import Users
-
+from models.quiz import SubmitQuiz
 from utils.storage import delete_image
 
 router = APIRouter(
@@ -236,14 +236,14 @@ def get_public_quiz_package_detail(
     }
 
 
-@router.get("/packages/{package_id}/questions/public")
-def get_public_questions_by_package(
-    package_id: int,
+@router.post("/submit")
+def submit_quiz(
+    payload: SubmitQuiz,
     db: Session = Depends(get_db)
 ):
 
     package = db.query(QuizPackage).filter(
-        QuizPackage.id == package_id
+        QuizPackage.id == payload.package_id
     ).first()
 
     if not package:
@@ -252,24 +252,53 @@ def get_public_questions_by_package(
             "message": "Quiz package tidak ditemukan"
         }
 
-    questions = db.query(QuizQuestion).filter(
-        QuizQuestion.package_id == package_id
-    ).all()
+    total_questions = db.query(QuizQuestion).filter(
+        QuizQuestion.package_id == payload.package_id
+    ).count()
+
+    score = 0
+
+    result_detail = []
+
+    for item in payload.answers:
+
+        question = db.query(QuizQuestion).filter(
+            QuizQuestion.id == item.question_id,
+            QuizQuestion.package_id == payload.package_id
+        ).first()
+
+        if not question:
+            continue
+
+        is_correct = (
+            question.answer.strip().lower()
+            ==
+            item.answer.strip().lower()
+        )
+
+        if is_correct:
+            score += 1
+
+        result_detail.append({
+            "question_id": question.id,
+            "correct": is_correct
+        })
+
+    percentage = 0
+
+    if total_questions > 0:
+        percentage = round(
+            (score / total_questions) * 100,
+            2
+        )
 
     return {
         "success": True,
-        "data": [
-            {
-                "id": q.id,
-                "question_text": q.question_text,
-                "image_url": q.image_url,
-                "options": [
-                    q.option_a,
-                    q.option_b,
-                    q.option_c,
-                    q.option_d
-                ]
-            }
-            for q in questions
-        ]
+        "data": {
+            "package_id": payload.package_id,
+            "score": score,
+            "total_questions": total_questions,
+            "percentage": percentage,
+            "details": result_detail
+        }
     }
