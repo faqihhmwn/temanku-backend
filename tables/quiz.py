@@ -1,4 +1,10 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+    ForeignKey
+)
 from config import Base
 import datetime
 
@@ -7,6 +13,12 @@ class QuizQuestion(Base):
     __tablename__ = "quiz_questions"
 
     id = Column(Integer, primary_key=True, index=True)
+
+    package_id = Column(
+        Integer,
+        ForeignKey("quiz_packages.id"),
+        nullable=False
+    )
 
     question_text = Column(String(255), nullable=False)
 
@@ -19,5 +31,12 @@ class QuizQuestion(Base):
 
     answer = Column(String(255), nullable=False)
 
-    created_at = Column(DateTime, default=datetime.datetime.now)
-    updated_at = Column(DateTime, nullable=True)
+    created_at = Column(
+        DateTime,
+        default=datetime.datetime.now
+    )
+
+    updated_at = Column(
+        DateTime,
+        nullable=True
+    )

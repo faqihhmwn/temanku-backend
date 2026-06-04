@@ -2,12 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
+
 from config import engine, Base
 
 # Import tables agar create_all membaca semua table
 import tables.users
 import tables.dictionary
 import tables.quiz
+import tables.quiz_package
 
 # Import routes
 import routes.users as user_routes
@@ -17,7 +19,7 @@ from routes import ml
 from routes import websocket
 from routes import quiz
 from routes import profile
-
+from routes import quiz_package 
 
 app = FastAPI()
 
@@ -61,3 +63,4 @@ app.include_router(predict.router)
 app.include_router(ml.router)
 app.include_router(websocket.router)
 app.include_router(quiz.router)
+app.include_router(quiz_package.router)

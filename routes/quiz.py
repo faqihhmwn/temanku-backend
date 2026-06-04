@@ -3,6 +3,7 @@ from config import get_db
 import datetime
 from oauth2 import get_current_admin
 from tables.quiz import QuizQuestion
+from tables.quiz_package import QuizPackage
 from tables.users import Users
 from fastapi import APIRouter, Depends, UploadFile, File, Form
 from utils.storage import upload_image, delete_image
@@ -43,8 +44,10 @@ def public_quiz_response(question: QuizQuestion):
     }
 
 
-@router.post("/questions")
+@router.post("/packages/{package_id}/questions")
 async def create_quiz_question(
+    package_id: int,
+
     question_text: str = Form(...),
     answer: str = Form(...),
 
@@ -59,6 +62,16 @@ async def create_quiz_question(
     current_admin: Users = Depends(get_current_admin)
 ):
     
+    package = db.query(QuizPackage).filter(
+    QuizPackage.id == package_id
+    ).first()
+
+    if not package:
+        return {
+            "success": False,
+            "message": "Quiz package tidak ditemukan"
+        }
+    
     image_url = None
 
     if file:
@@ -72,6 +85,7 @@ async def create_quiz_question(
         image_url = upload_image(file)
 
     new_question = QuizQuestion(
+        package_id=package_id,
         question_text=question_text,
         image_url=image_url,
         option_a=option_a,
@@ -140,6 +154,36 @@ def get_public_quiz_question_detail(
     return {
         "success": True,
         "data": public_quiz_response(question)
+    }
+
+
+@router.get("/packages/{package_id}/questions")
+def get_questions_by_package(
+    package_id: int,
+    db: Session = Depends(get_db),
+    current_admin: Users = Depends(get_current_admin)
+):
+
+    package = db.query(QuizPackage).filter(
+        QuizPackage.id == package_id
+    ).first()
+
+    if not package:
+        return {
+            "success": False,
+            "message": "Quiz package tidak ditemukan"
+        }
+
+    questions = db.query(QuizQuestion).filter(
+        QuizQuestion.package_id == package_id
+    ).all()
+
+    return {
+        "success": True,
+        "data": [
+            quiz_admin_response(q)
+            for q in questions
+        ]
     }
 
 

@@ -1,21 +1,36 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 from typing import Optional
 
 
-class QuizResponse(BaseModel):
-    id: int
+class CreateQuizPackage(BaseModel):
+    title: str
+    description: Optional[str] = None
+    difficulty: str
+
+
+class UpdateQuizPackage(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    difficulty: Optional[str] = None
+
+
+class CreateQuizQuestion(BaseModel):
+    package_id: int
 
     question_text: str
-
-    image_url: Optional[str] = None
+    answer: str
 
     option_a: Optional[str] = None
     option_b: Optional[str] = None
     option_c: Optional[str] = None
     option_d: Optional[str] = None
 
-    answer: str
 
-    model_config = ConfigDict(
-        from_attributes=True
-    )
+class UpdateQuizQuestion(BaseModel):
+    question_text: Optional[str] = None
+    answer: Optional[str] = None
+
+    option_a: Optional[str] = None
+    option_b: Optional[str] = None
+    option_c: Optional[str] = None
+    option_d: Optional[str] = None
