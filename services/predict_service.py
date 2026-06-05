@@ -8,7 +8,7 @@ model = YOLO(MODEL_PATH)
 
 
 def predict_image(image_path: str):
-    results = model(image_path)
+    results = model(image_path,conf=0.5)
 
     predictions = []
 
@@ -43,6 +43,15 @@ def predict_image(image_path: str):
         predictions,
         key=lambda x: x["confidence"]
     )
+
+    # filter prediction
+
+    if best_prediction["confidence"] < 0.6:
+        return {
+            "prediction": None,
+            "confidence": best_prediction["confidence"],
+            "message": "Prediksi tidak stabil"
+        }
 
     return {
         "prediction": best_prediction["label"],
