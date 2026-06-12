@@ -121,7 +121,7 @@ def get_quiz_questions(
 
 
 # PUBLIC ENDPOINT UNTUK USER
-# Taruh sebelum /questions/{question_id}
+
 @router.get("/questions/public")
 def get_public_quiz_questions(
     db: Session = Depends(get_db)
