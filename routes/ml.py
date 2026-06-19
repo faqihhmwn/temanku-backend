@@ -35,3 +35,18 @@ async def predict(file: UploadFile = File(...)):
         "message": "Prediction success",
         "data": result
     }
+
+# coba untuk pengujian performance
+
+@router.get("/benchmark")
+def benchmark():
+
+    image_path = "assets/F_23.jpg"
+
+    result = predict_image(image_path)
+
+    return {
+        "success": True,
+        "message": "Benchmark success",
+        "data": result
+    }
