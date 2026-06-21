@@ -28,6 +28,8 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://temanku-frontend.vercel.app",
+    "https://temanku.site",
+    "https://www.temanku.site",
 ]
 
 app.add_middleware(
