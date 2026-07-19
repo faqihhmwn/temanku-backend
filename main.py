@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
+from routes import mobilenet
 
 from config import engine, Base
 
@@ -66,3 +67,5 @@ app.include_router(ml.router)
 app.include_router(websocket.router)
 app.include_router(quiz.router)
 app.include_router(quiz_package.router)
+
+app.include_router(mobilenet.router)
