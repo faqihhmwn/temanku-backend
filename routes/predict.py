@@ -9,7 +9,7 @@ router = APIRouter(
 
 ML_API_URL = os.getenv(
     "ML_API_URL",
-    "http://34.128.103.181:8000/ml/predict"
+    "http://34.101.66.56:8000/ml/predict"
 )
 
 @router.post("/")
